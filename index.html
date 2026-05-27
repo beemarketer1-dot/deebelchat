@@ -1,0 +1,347 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Fake WhatsApp Chat Generator</title>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Controls Panel -->
+        <div class="controls-panel glass-panel">
+            <div class="tabs">
+                <button class="tab-btn active" data-tab="settings-tab"><i class="fas fa-mobile-screen"></i> Display Settings</button>
+                <button class="tab-btn" data-tab="add-chat-tab"><i class="fas fa-plus"></i> Add Chat</button>
+            </div>
+
+            <!-- Settings Tab -->
+            <div class="tab-content active" id="settings-tab">
+                
+                <div class="control-group">
+                    <label>Layout</label>
+                    <div class="btn-group">
+                        <button class="icon-btn active" data-setting="os" data-value="android"><i class="fab fa-android"></i></button>
+                        <button class="icon-btn" data-setting="os" data-value="ios"><i class="fab fa-apple"></i></button>
+                        <button class="icon-btn toggle-btn" data-setting="darkMode"><i class="fas fa-moon"></i> Dark Mode</button>
+                    </div>
+                </div>
+
+                <div class="control-row">
+                    <div class="control-group half">
+                        <label>Network</label>
+                        <select id="networkType">
+                            <option value="5G">5G</option>
+                            <option value="4G">4G</option>
+                            <option value="LTE">LTE</option>
+                            <option value="Wi-Fi">Wi-Fi</option>
+                        </select>
+                    </div>
+                    <div class="control-group half">
+                        <label>Signal</label>
+                        <select id="signalStrength">
+                            <option value="100">Full</option>
+                            <option value="75">Good</option>
+                            <option value="50">Fair</option>
+                            <option value="25">Poor</option>
+                        </select>
+                    </div>
+                </div>
+
+                <div class="control-row">
+                    <div class="control-group half">
+                        <label>Clock Time</label>
+                        <div style="display:flex; gap: 5px;">
+                            <input type="time" id="clockTime" value="10:04" style="flex:1;">
+                            <button class="icon-btn" id="currentClockTimeBtn" title="Set to Current Time" style="width:auto; padding:0 10px;"><i class="far fa-clock"></i></button>
+                        </div>
+                    </div>
+                    <div class="control-group half">
+                        <label>Battery %</label>
+                        <input type="number" id="batteryLevel" value="50" min="1" max="100">
+                    </div>
+                </div>
+                
+                <div class="control-group">
+                    <label>Battery Status</label>
+                    <div class="btn-group">
+                        <button class="icon-btn toggle-btn" id="batteryCharging"><i class="fas fa-bolt"></i> Charging</button>
+                        <button class="icon-btn toggle-btn active" id="showBatteryPercent">Show %</button>
+                    </div>
+                </div>
+
+                <div class="control-group">
+                    <label>Chat Background</label>
+                    <div class="btn-group">
+                        <label class="icon-btn bg-upload">
+                            <i class="fas fa-image"></i> Change Bg
+                            <input type="file" id="bgImageUpload" accept="image/*" style="display:none;">
+                        </label>
+                        <button class="icon-btn danger" id="resetBg"><i class="fas fa-undo"></i> Reset</button>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Add Chat Tab -->
+            <div class="tab-content" id="add-chat-tab">
+                
+                <div class="profile-settings glass-box">
+                    <h4>Receiver's Profile</h4>
+                    <div class="control-row">
+                        <div class="avatar-upload">
+                            <label for="profileImageUpload">
+                                <img id="profileImagePreview" src="" alt="Profile" crossorigin="anonymous">
+                                <div class="upload-icon"><i class="fas fa-camera"></i></div>
+                            </label>
+                            <input type="file" id="profileImageUpload" accept="image/*" style="display:none;">
+                        </div>
+                        <div class="profile-details">
+                            <input type="text" id="profileName" value="name" placeholder="Contact Name">
+                            <select id="profileStatus">
+                                <option value="Online">Online</option>
+                                <option value="typing...">typing...</option>
+                                <option value="Offline">Offline</option>
+                                <option value="last seen today at 10:00 AM">Last seen...</option>
+                            </select>
+                            <div id="customLastSeenContainer" style="display: none; margin-top: 5px;">
+                                <input type="time" id="customLastSeen" value="10:00" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px;">
+                            </div>
+                        </div>
+                        </div>
+                    </div>
+
+                    <div class="input-group" style="margin-top: 15px;">
+                        <label>Additional Theme Widgets</label>
+                        <div style="display: flex; flex-direction: column; gap: 10px; margin-top: 5px;">
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input type="checkbox" id="toggleEncryption" checked style="width:16px; height:16px;"> Enable/Disable Encryption Text
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input type="checkbox" id="toggleNavBar" checked style="width:16px; height:16px;"> Show Bottom Nav Bar
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input type="checkbox" id="toggleGalleryIcon" style="width:16px; height:16px;"> Use Gallery Icon in Header
+                            </label>
+                            <label style="display: flex; align-items: center; gap: 8px; cursor: pointer;">
+                                <input type="checkbox" id="toggleCustomStatus" style="width:16px; height:16px;"> Custom Android Status (VoLTE, WiFi)
+                            </label>
+                        </div>
+                    </div>
+                    
+
+                <div class="message-composer glass-box">
+                    <div class="sender-toggle">
+                        <button class="toggle-btn" data-sender="receiver"><i class="fas fa-arrow-down"></i> Receiver</button>
+                        <button class="toggle-btn active" data-sender="sender"><i class="fas fa-arrow-up"></i> Sender (You)</button>
+                    </div>
+                    
+                    <div class="msg-sub-tabs">
+                        <button class="msg-tab-btn active" data-msg-tab="msg-text-tab"><i class="far fa-comment-alt"></i> Message</button>
+                        <button class="msg-tab-btn" data-msg-tab="msg-date-tab"><i class="far fa-calendar-alt"></i> Date</button>
+                        <button class="msg-tab-btn" data-msg-tab="msg-voice-tab"><i class="fas fa-microphone"></i> Voice Note</button>
+                    </div>
+
+                    <div class="msg-tab-content active" id="msg-text-tab">
+                        <textarea id="messageInput" placeholder="Type message here..." rows="3"></textarea>
+                        <div class="media-upload-area">
+                            <label for="msgImageUpload" class="upload-label">
+                                <i class="fas fa-image"></i> Add Image / Video Thumbnails
+                            </label>
+                            <input type="file" id="msgImageUpload" accept="image/*" style="display:none;">
+                            <div style="position:relative;">
+                                <img id="msgImagePreview" style="display:none; width: 100%; margin-top: 10px; border-radius: 8px;">
+                                <button id="removeMsgImage" class="icon-btn danger" style="display:none; position:absolute; top:15px; right:5px; width:30px; height:30px; padding:0;"><i class="fas fa-times"></i></button>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="msg-tab-content" id="msg-date-tab">
+                        <div class="btn-group">
+                            <button class="icon-btn date-preset active" data-date="Today">Today</button>
+                            <button class="icon-btn date-preset" data-date="Yesterday">Yesterday</button>
+                            <button class="icon-btn date-preset" data-date="Custom">Custom Date</button>
+                        </div>
+                        <input type="date" id="customDateInput" style="display:none; margin-top:10px;">
+                        <p style="font-size: 12px; color: var(--text-muted); margin-top: 10px;">
+                            <i class="fas fa-info-circle"></i> Add a date to separate messages.
+                        </p>
+                    </div>
+
+                    <div class="msg-tab-content" id="msg-voice-tab">
+                        <label class="icon-btn primary-outline" style="width:max-content;">
+                            <i class="fas fa-upload"></i> Choose audio file
+                            <input type="file" id="audioUpload" accept="audio/*" style="display:none;">
+                        </label>
+                        <span id="audioFileName" style="font-size:12px; margin-left:10px;"></span>
+                        <div style="margin-top: 10px; font-size: 12px; color: var(--text-muted);">
+                            Length (seconds): <input type="number" id="audioLength" value="5" min="1" style="width: 60px; padding: 5px;">
+                        </div>
+                    </div>
+                    
+                    <div class="message-options">
+                        <div class="control-group half">
+                            <label>Message Time</label>
+                            <div style="display:flex; gap: 5px;">
+                                <input type="time" id="messageTime" value="10:15" style="flex:1;">
+                                <button class="icon-btn" id="currentMsgTimeBtn" title="Set to Current Time" style="width:auto; padding:0 10px;"><i class="far fa-clock"></i></button>
+                            </div>
+                        </div>
+                        <div class="control-group half">
+                            <label>Reaction & Status</label>
+                            <div style="display:flex; gap: 5px;" id="statusGroup">
+                                <select id="messageReaction" style="width: 60px; padding-left: 5px; padding-right: 5px;">
+                                    <option value="">🚫</option>
+                                    <option value="👍">👍</option>
+                                    <option value="❤️">❤️</option>
+                                    <option value="😂">😂</option>
+                                    <option value="😮">😮</option>
+                                    <option value="😢">😢</option>
+                                    <option value="🙏">🙏</option>
+                                </select>
+                                <select id="messageStatus" style="flex:1;">
+                                    <option value="read">Seen</option>
+                                    <option value="delivered">Delivered</option>
+                                    <option value="sent">Sent</option>
+                                    <option value="waiting">Waiting</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                    
+                    <div class="action-buttons">
+                        <button class="primary-btn" id="addMessageBtn"><i class="fas fa-plus"></i> Add Message</button>
+                        <button class="icon-btn danger" id="clearChatBtn" style="width:auto; padding:0 15px;"><i class="fas fa-undo"></i> Reset Form</button>
+                    </div>
+                </div>
+
+            </div>
+        </div>
+
+        <!-- Preview Panel -->
+        <div class="preview-panel">
+            <div class="export-actions" style="display:flex; gap:10px;">
+                <button class="export-btn" id="previewModalBtn" style="flex:1; background: #2a3942;"><i class="fas fa-eye"></i> Chat Preview</button>
+                <button class="export-btn" id="downloadImage" style="flex:1;"><i class="fas fa-download"></i> Download As Image</button>
+            </div>
+
+            <div class="phone-wrapper">
+                <div class="phone-preview" id="phonePreview">
+                    <div class="chat-bg" id="chatBg"></div>
+                    <!-- Status Bar -->
+                    <div class="status-bar" id="statusBar">
+                        <div class="time" id="previewTime">10:04</div>
+                        <div class="icons">
+                            <i class="fas fa-signal"></i>
+                            <span id="previewNetwork">5G</span>
+                            <span id="previewBatteryPct">50%</span>
+                            <i class="fas fa-battery-half" id="previewBatteryIcon"></i>
+                        </div>
+                    </div>
+                    
+                    <!-- Chat Header -->
+                    <div class="chat-header">
+                        <div class="header-left">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round" stroke-linejoin="round">
+                                <line x1="20" y1="12" x2="4" y2="12" />
+                                <polyline points="10 18 4 12 10 6" />
+                            </svg>
+                            <img id="headerAvatar" src="" alt="Avatar" crossorigin="anonymous">
+                            <div class="header-info">
+                                <div class="header-name"><span id="headerName">name</span></div>
+                                <div class="header-status" id="headerStatus">Online</div>
+                            </div>
+                        </div>
+                        <div class="header-right">
+                            <span id="headerIcon1" style="display:flex;">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="none">
+                                  <path d="M15 7V4a1 1 0 0 0-1-1H5a1 1 0 0 0-1 1v10a1 1 0 0 0 1 1h2" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" />
+                                  <rect x="9" y="9" width="12" height="12" rx="1.5" stroke="currentColor" stroke-width="2" />
+                                  <circle cx="15" cy="13.5" r="2" fill="currentColor" />
+                                  <path d="M12 21v-.5c0-1.5 1.5-2.5 3-2.5s3 1 3 2.5v.5z" fill="currentColor" />
+                                </svg>
+                            </span>
+                            <span id="headerIcon2" style="display:flex;">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2.2" stroke-linecap="round" stroke-linejoin="round">
+                                  <path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07 19.5 19.5 0 0 1-6-6 19.79 19.79 0 0 1-3.07-8.67A2 2 0 0 1 4.11 2h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L8.09 9.91a16 16 0 0 0 6 6l1.27-1.27a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z" />
+                                  <path d="M19 3v6M16 6h6" stroke-width="2.5" />
+                                </svg>
+                            </span>
+                            <span id="headerIcon3" style="display:flex;">
+                                <svg viewBox="0 0 24 24" width="24" height="24"><path fill="currentColor" d="M12 7a2 2 0 1 0-.001-4.001A2 2 0 0 0 12 7zm0 2a2 2 0 1 0-.001 3.999A2 2 0 0 0 12 9zm0 6a2 2 0 1 0-.001 3.999A2 2 0 0 0 12 15z"></path></svg>
+                            </span>
+                        </div>
+                    </div>
+                    
+                    <!-- Chat Body -->
+                    <div class="chat-body" id="chatBody">
+                        <div class="date-badge">Today</div>
+                        <div class="encryption-msg" id="encryptionMsg">
+                            <i class="fas fa-lock"></i> Messages and calls are end-to-end encrypted. Only people in this chat can read, listen to, or share them. <strong>Learn more</strong>
+                        </div>
+                        <!-- Messages will go here -->
+                    </div>
+                    
+                    <!-- Chat Input -->
+                    <div class="chat-footer">
+                        <div class="input-bar">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                <circle cx="12" cy="12" r="10" />
+                                <path d="M8 14s1.5 2 4 2 4-2 4-2" />
+                                <line x1="9" y1="9" x2="9.01" y2="9" stroke-width="3" />
+                                <line x1="15" y1="9" x2="15.01" y2="9" stroke-width="3" />
+                            </svg>
+                            <div class="input-placeholder">Message</div>
+                            <div class="input-actions">
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                                  <path d="M21.44 11.05l-9.19 9.19a6 6 0 0 1-8.49-8.49l9.19-9.19a4 4 0 0 1 5.66 5.66l-9.2 9.19a2 2 0 0 1-2.83-2.83l8.49-8.48" />
+                                </svg>
+                                <svg viewBox="0 0 24 24" width="24" height="24" fill="currentColor">
+                                  <path d="M21.5 6.5h-3.8l-1.4-1.8c-.3-.4-.8-.7-1.3-.7h-6c-.5 0-1 .3-1.3.7l-1.4 1.8H2.5C1.1 6.5 0 7.6 0 9v10.5C0 20.9 1.1 22 2.5 22h19c1.4 0 2.5-1.1 2.5-2.5V9c0-1.4-1.1-2.5-2.5-2.5zm-9.5 12c-3 0-5.5-2.5-5.5-5.5S9 7.5 12 7.5s5.5 2.5 5.5 5.5-2.5 5.5-5.5 5.5z"/>
+                                  <circle cx="12" cy="13" r="3"/>
+                                </svg>
+                            </div>
+                        </div>
+                        <div class="mic-btn">
+                            <svg viewBox="0 0 24 24" width="24" height="24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+                              <path d="M12 2a3 3 0 0 0-3 3v7a3 3 0 0 0 6 0V5a3 3 0 0 0-3-3z" />
+                              <path d="M19 10v2a7 7 0 0 1-14 0v-2" />
+                              <line x1="12" y1="19" x2="12" y2="22" />
+                              <line x1="8" y1="22" x2="16" y2="22" />
+                            </svg>
+                        </div>
+                    </div>
+                    
+                    <!-- Navigation Bar -->
+                    <div class="nav-bar" id="bottomNavBar">
+                        <div class="nav-handle"></div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chat Preview Modal -->
+    <div id="chatModal" class="chat-modal">
+        <div class="chat-modal-content">
+            <div class="chat-modal-header">
+                <h3>Chat Preview</h3>
+                <button id="closeModalBtn" class="close-modal-btn"><i class="fas fa-times"></i></button>
+            </div>
+            <div class="chat-modal-body" id="modalPhoneWrapper">
+                <!-- Phone gets moved here -->
+            </div>
+            <div class="chat-modal-footer">
+                <button class="export-btn" id="modalDownloadBtn" style="width: 100%; background: #00a884; color: white; border: none; padding: 12px; border-radius: 8px; font-weight: bold; cursor: pointer;">
+                    Download As Image <i class="fas fa-download"></i>
+                </button>
+            </div>
+        </div>
+    </div>
+
+    <script src="script.js"></script>
+</body>
+</html>
