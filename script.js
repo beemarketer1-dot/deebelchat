@@ -82,6 +82,9 @@ document.addEventListener('DOMContentLoaded', () => {
     // Initialize default times
     setCurrentTime('clockTime');
     setCurrentTime('messageTime');
+    
+    // Initialize default profile pic
+    document.getElementById('profileName').dispatchEvent(new Event('input'));
 
     const updateNetwork = () => {
         const net = document.getElementById('previewNetwork');
@@ -219,10 +222,13 @@ document.addEventListener('DOMContentLoaded', () => {
         updateBattery();
     });
 
+    let customProfilePic = false;
+
     // Profile Settings
     document.getElementById('profileImageUpload').addEventListener('change', (e) => {
         const file = e.target.files[0];
         if (file) {
+            customProfilePic = true;
             const reader = new FileReader();
             reader.onload = (e) => {
                 document.getElementById('profileImagePreview').src = e.target.result;
@@ -232,16 +238,73 @@ document.addEventListener('DOMContentLoaded', () => {
         }
     });
 
+    function generateAvatarDataUrl(name) {
+        const canvas = document.createElement('canvas');
+        canvas.width = 128;
+        canvas.height = 128;
+        const ctx = canvas.getContext('2d');
+        
+        const firstLetter = (name.trim().charAt(0) || 'N').toUpperCase();
+        const charCode = firstLetter.charCodeAt(0) || 0;
+        const profileColors = ['#00a884', '#005c4b', '#1d4ed8', '#7e22ce', '#be185d', '#b45309', '#0f766e', '#4338ca'];
+        const color = profileColors[charCode % profileColors.length];
+        
+        ctx.fillStyle = color;
+        ctx.fillRect(0, 0, canvas.width, canvas.height);
+        
+        ctx.font = 'bold 64px Arial, sans-serif';
+        ctx.fillStyle = '#ffffff';
+        ctx.textAlign = 'center';
+        ctx.textBaseline = 'middle';
+        ctx.fillText(firstLetter, canvas.width / 2, canvas.height / 2 + 5);
+        
+        return canvas.toDataURL('image/png');
+    }
+
     document.getElementById('profileName').addEventListener('input', (e) => {
-        headerName.textContent = e.target.value;
+        const newName = e.target.value;
+        headerName.textContent = newName;
+        
+        if (!customProfilePic) {
+            const avatarUrl = generateAvatarDataUrl(newName);
+            document.getElementById('profileImagePreview').src = avatarUrl;
+            headerAvatar.src = avatarUrl;
+        }
     });
 
+    function formatLastSeenTime(timeStr) {
+        if (!timeStr) return 'last seen today at 10:00 am';
+        let [hours, minutes] = timeStr.split(':');
+        let period = 'AM';
+        hours = parseInt(hours);
+        if (hours >= 12) {
+            period = 'PM';
+            if (hours > 12) hours -= 12;
+        }
+        if (hours === 0) hours = 12;
+        return `last seen today at ${hours}:${minutes} ${period.toLowerCase()}`;
+    }
+
     document.getElementById('profileStatus').addEventListener('change', (e) => {
+        const customInputContainer = document.getElementById('customLastSeenContainer');
+        const customInput = document.getElementById('customLastSeen');
         if (e.target.value === 'Offline') {
             headerStatus.style.display = 'none';
+            customInputContainer.style.display = 'none';
+        } else if (e.target.value === 'last seen today at 10:00 AM') {
+            customInputContainer.style.display = 'block';
+            headerStatus.textContent = formatLastSeenTime(customInput.value);
+            headerStatus.style.display = 'block';
         } else {
+            customInputContainer.style.display = 'none';
             headerStatus.textContent = e.target.value;
             headerStatus.style.display = 'block';
+        }
+    });
+
+    document.getElementById('customLastSeen').addEventListener('input', (e) => {
+        if (document.getElementById('profileStatus').value === 'last seen today at 10:00 AM') {
+            headerStatus.textContent = formatLastSeenTime(e.target.value);
         }
     });
 

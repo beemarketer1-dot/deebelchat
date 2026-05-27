@@ -94,7 +94,7 @@
                     <div class="control-row">
                         <div class="avatar-upload">
                             <label for="profileImageUpload">
-                                <img id="profileImagePreview" src="https://ui-avatars.com/api/?name=name&background=random" alt="Profile">
+                                <img id="profileImagePreview" src="" alt="Profile" crossorigin="anonymous">
                                 <div class="upload-icon"><i class="fas fa-camera"></i></div>
                             </label>
                             <input type="file" id="profileImageUpload" accept="image/*" style="display:none;">
@@ -107,6 +107,9 @@
                                 <option value="Offline">Offline</option>
                                 <option value="last seen today at 10:00 AM">Last seen...</option>
                             </select>
+                            <div id="customLastSeenContainer" style="display: none; margin-top: 5px;">
+                                <input type="time" id="customLastSeen" value="10:00" style="width: 100%; padding: 8px; border: 1px solid var(--border); border-radius: 8px; font-size: 14px;">
+                            </div>
                         </div>
                         </div>
                     </div>
@@ -246,10 +249,10 @@
                                 <line x1="20" y1="12" x2="4" y2="12" />
                                 <polyline points="10 18 4 12 10 6" />
                             </svg>
-                            <img id="headerAvatar" src="https://ui-avatars.com/api/?name=name&background=random" alt="Avatar">
+                            <img id="headerAvatar" src="" alt="Avatar" crossorigin="anonymous">
                             <div class="header-info">
                                 <div class="header-name"><span id="headerName">name</span></div>
-                                <div class="header-status" id="headerStatus" style="display: none;">Online</div>
+                                <div class="header-status" id="headerStatus">Online</div>
                             </div>
                         </div>
                         <div class="header-right">
